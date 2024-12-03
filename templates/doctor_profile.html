@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="alert {{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <h1>Doctor Profile</h1>
+    <div class="profile-details">
+        <p><strong>Name:</strong> {{ doctor.user.first_name }} {{ doctor.user.last_name }}</p>
+        <p><strong>Username:</strong> {{ doctor.user.username }}</p>
+        <p><strong>Email:</strong> {{ doctor.user.email }}</p>
+        <p><strong>Specialization:</strong> {{ doctor.specialization }}</p>
+        <p><strong>Phone Number:</strong> {{ doctor.phone_number }}</p>
+        <p><strong>Address:</strong> {{ doctor.address }}</p>
+        {% if doctor.profile_pic %}
+            <p><strong>Profile Picture:</strong></p>
+            <img src="{{ doctor.profile_pic.url }}" alt="Profile Picture" width="150">
+        {% endif %}
+    </div>
+    <a href="{% url 'edit_doctor_profile' %}" class="btn btn-primary">Edit Profile</a>
+</div>
+{% endblock %}

@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block style %}
+<style>
+    /* General Reset and Base Styling */
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f9f9f9;
+        margin: 0;
+        padding: 0;
+    }
+
+    .containers {
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        max-width: 800px;
+        margin: 40px auto;
+        border: 1px solid #e0e0e0;
+    }
+
+    /* Header */
+    h1 {
+        font-size: 2rem;
+        margin-bottom: 20px;
+        color: #333333;
+        text-align: center;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+        margin-top: 20px;
+        margin-bottom: 10px;
+        color: #007bff;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 5px;
+    }
+
+    /* Paragraphs */
+    p {
+        font-size: 1rem;
+        line-height: 1.6;
+        color: #555555;
+        margin: 8px 0;
+    }
+
+    strong {
+        color: #333333;
+    }
+
+    /* Links */
+    .details a {
+        display: inline-block;
+        font-size: 1rem;
+        color: #ffffff;
+        background-color: #28a745;
+        text-decoration: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        margin-top: 10px;
+    }
+
+    .details a:hover {
+        background-color: #218838;
+    }
+
+    /* Billing & Status Section */
+    hr {
+        border: 1px solid #e0e0e0;
+        margin: 20px 0;
+    }
+
+    p span {
+        font-weight: bold;
+    }
+
+    p.payment-status {
+        font-size: 1rem;
+        font-weight: bold;
+        color: #28a745; /* Green for Paid */
+    }
+
+    p.payment-status.not-paid {
+        color: #dc3545; /* Red for Not Paid */
+    }
+
+    /* Button Styles */
+    .btn-primary {
+        background-color: #007bff;
+        color: #ffffff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 1rem;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+</style>
+{% endblock %}
+{% block content %}
+
+<div class="containers mt-4">
+    <h1>Appointment Details</h1>
+    
+    <h2>Appointment Information</h2>
+    <p><strong>Date:</strong> {{ appointment.appointment_date }}</p>
+    <p><strong>Doctor:</strong> {{ appointment.doctor.user.first_name }} {{ appointment.doctor.user.last_name }}</p>
+    <p><strong>Patient:</strong> {{ appointment.patient.user.first_name }} {{ appointment.patient.user.last_name }}</p>
+    <p><strong>Problems Facing:</strong> {{ appointment.problems_facing }}</p>
+    <p><strong>Status:</strong> {{ appointment.status }}</p>
+    <p><strong>Consultation Fee:</strong> {{ appointment.consultation_fee }}</p>
+    <p><strong>Payment Status:</strong> {{ appointment.payment_status|yesno:"Paid,Not Paid" }}</p>
+
+    <hr>
+
+    <h2>Medical History</h2>
+    <p>{{ appointment.patient.medical_history }}</p>
+
+    <hr>
+
+    <h2>Prescription</h2>
+    {% if prescription %}
+        {% if prescription.payment_status %}
+            <p><strong>Date Prescribed:</strong> {{ prescription.prescribed_at }}</p>
+            <p><strong>Medications:</strong> {{ prescription.medications }}</p>
+            <p><strong>Notes:</strong> {{ prescription.notes }}</p>
+            <p><strong>Total Cost:</strong> {{ prescription.total_cost }}</p>
+            <p><strong>Payment Status:</strong> {{ prescription.payment_status|yesno:"Paid,Not Paid" }}</p>
+        {% else %}
+            <a class="details" href="{% url 'prescription_payment' appointment.id %}">Prescription Payment</a>
+        {% endif %}
+    {% else %}
+        <p>No prescription available for this appointment.</p>
+    {% endif %}
+
+    <hr>
+
+    <h2>Billing</h2>
+    {% if billing %}
+        <p><strong>Amount:</strong> {{ billing.amount }}</p>
+        <p><strong>Payment Status:</strong> {{ billing.is_paid|yesno:"Paid,Not Paid" }}</p>
+    {% else %}
+        <p>No billing information available.</p>
+    {% endif %}
+</div>
+
+{% endblock %}

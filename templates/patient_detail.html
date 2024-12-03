@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block style %}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .containers {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .profile-picture {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #2980b9;
+        }
+
+        h1, h2, h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        p {
+            margin: 5px 0;
+        }
+
+        .patient-info, .form-section, .prescription-list {
+            margin-bottom: 30px;
+        }
+
+        .form-section form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-section button {
+            background-color: #2980b9;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .form-section button:hover {
+            background-color: #3498db;
+        }
+
+        .prescription-list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .prescription-list li {
+            background: #ecf0f1;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .prescription-list strong {
+            color: #34495e;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="containers">
+        <!-- Profile Header -->
+        <div class="profile-header">
+            {% if patient.profile_pic %}
+            <img src="{{ patient.profile_pic.url }}" alt="Profile Picture" class="profile-picture">
+            {% endif %}
+            <h2>{{ patient.user.first_name }} {{ patient.user.last_name }}</h2>
+        </div>
+
+        <!-- Display Patient Information -->
+        <div class="patient-info">
+            <p><strong>Age:</strong> {{ patient.age }}</p>
+            <p><strong>Gender:</strong> {{ patient.gender }}</p>
+            <p><strong>Medical History:</strong> {{ patient.medical_history }}</p>
+        </div>
+
+        <!-- Update Medical History Form -->
+        <div class="form-section">
+            <h3>Update Medical History</h3>
+            <form method="post">
+                {% csrf_token %}
+                {{ history_form.as_p }}
+                <button type="submit" name="update_history">Update History</button>
+            </form>
+        </div>
+
+        <!-- Prescribe Medication Form -->
+        <div class="form-section">
+            <h3>Prescribe Medication</h3>
+            <form method="post">
+                {% csrf_token %}
+                {{ prescription_form.as_p }}
+                <button type="submit" name="prescribe_medication">Prescribe</button>
+            </form>
+        </div>
+
+        <!-- Display Prescribed Medications for this Appointment -->
+        <div class="prescription-list">
+            <h3>Prescribed Medications</h3>
+            {% if prescriptions %}
+                <p>Number of prescriptions: {{ prescriptions.count }}</p>
+                <ul>
+                    {% for prescription in prescriptions %}
+                        <li>
+                            <strong>Medications:</strong> {{ prescription.medications }}<br>
+                            <strong>Notes:</strong> {{ prescription.notes|default:"No notes provided" }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No medications have been prescribed for this appointment.</p>
+            {% endif %}
+        </div>
+        {% if appointment.status == 'Completed' %}
+            <div class="completed">
+                <h3>This has been marked completed</h3>
+            </div>
+        {% else %}
+            <div class="completed">
+                <form action="{% url 'appointment_completed' appointment.id patient.id %}" method="POST">
+                    {% csrf_token %}
+                    <input type="submit" value="Completed">
+                </form>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

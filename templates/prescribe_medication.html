@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<form method="POST">
+    {% csrf_token %}
+    <h2>Prescribe Medication for Appointment with {{ appointment.patient.user.username }}</h2>
+    {{ form.as_p }}
+    <button type="submit">Submit Prescription</button>
+</form>
+{% endblock %}

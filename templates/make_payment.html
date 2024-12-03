@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<form method="POST">
+    {% csrf_token %}
+    <h2>Pay for Billing: ${{ billing.amount }}</h2>
+    {{ form.as_p }}
+    <button type="submit">Make Payment</button>
+</form>
+
+{% endblock %}

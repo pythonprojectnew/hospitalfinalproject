@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block style %}
+<style>
+    /* General Page Styling */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f9;
+        color: #333;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Container Styling */
+    .containers {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Header */
+    .welcome {
+        color: #4A90E2;
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 1.5em;
+    }
+
+    /* Appointments Section */
+    .appointments h3 {
+        font-size: 1.2em;
+        color: #333;
+        border-bottom: 2px solid #4A90E2;
+        padding-bottom: 8px;
+        margin-bottom: 20px;
+    }
+
+    /* Appointment List */
+    .appointment-list {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .appointment-item {
+        background: #f9f9f9;
+        padding: 15px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .no-appointments {
+        color: #888;
+        font-style: italic;
+        text-align: center;
+    }
+
+    /* Actions */
+    .actions {
+        margin-top: 10px;
+    }
+
+    .actions a {
+        text-decoration: none;
+        color: #4A90E2;
+        font-weight: bold;
+        margin-right: 10px;
+    }
+
+    .reschedule:hover {
+        color: #357ABD;
+    }
+
+    .cancel {
+        color: #D9534F;
+    }
+
+    .cancel:hover {
+        color: #B52A2A;
+    }
+
+    /* Book Button */
+    .book-btn {
+        display: inline-block;
+        padding: 10px 15px;
+        margin-top: 20px;
+        background-color: #4A90E2;
+        color: #ffffff;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+
+    .book-btn:hover {
+        background-color: #357ABD;
+    }
+
+</style>
+{% endblock %}
+{% block content %}
+<div class="containers">
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="alert {{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <h2 class="welcome">Welcome, {{ user.username }}!</h2>
+
+    <div class="appointments">
+        <h3>Your Appointments</h3>
+        <ul class="appointment-list">
+            {% for appointment in appointments %}
+                <li class="appointment-item">
+                    <p>
+                        Appointment with Dr. {{ appointment.doctor.user.username }} on {{ appointment.appointment_date }} - Status: {{ appointment.status }}
+                    </p>
+                    {% if appointment.status == 'Pending' %}
+                        <div class="actions">
+                            <a href="{% url 'reschedule_appointment' appointment.id %}" class="reschedule">Reschedule</a> |
+                            <a href="{% url 'cancel_appointment' appointment.id %}" class="cancel" onclick="return confirm('Are you sure you want to cancel this appointment?');">Cancel</a>
+                        </div>
+                    {% elif appointment.status == 'Cancelled' %}
+                        <p class="appointment-item">Your Appointment has been Cancelled</p>
+                    {% elif appointment.status == 'Rescheduled' %}
+                        <p class="appointment-item">Your Appointment has been Rescheduled</p>
+                        <div class="actions">
+                            <a href="{% url 'reschedule_appointment' appointment.id %}" class="reschedule">Reschedule</a> |
+                            <a href="{% url 'cancel_appointment' appointment.id %}" class="cancel" onclick="return confirm('Are you sure you want to cancel this appointment?');">Cancel</a>
+                        </div>
+                    {% elif appointment.status == 'Confirmed' %}
+                        <p class="appointment-item">Your Appointment has been Confirmed</p>
+                        <div class="actions">
+                            <a href="{% url 'reschedule_appointment' appointment.id %}" class="reschedule">Reschedule</a> |
+                            <a href="{% url 'cancel_appointment' appointment.id %}" class="cancel" onclick="return confirm('Are you sure you want to cancel this appointment?');">Cancel</a>
+                        </div>
+                    {% else %}
+                        <p class="appointment-item">Your Appointment has been Completed</p>
+                        <a href="{% url 'view_details' appointment.id %}">View details</a>
+                    {% endif %}
+                </li>
+            {% empty %}
+                <li class="no-appointments">No appointments scheduled.</li>
+            {% endfor %}
+        </ul>
+        <a href="{% url 'book_appointment' %}" class="book-btn">Book a New Appointment</a>
+    </div>
+</div>
+{% endblock %}

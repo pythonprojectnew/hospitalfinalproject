@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block style %}
+<style>
+    /* General Page Styling */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f9;
+        color: #333;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Container Styling */
+    .containers {
+        max-width: 1000px;
+        margin: 40px auto;
+        padding: 20px;
+    }
+
+    /* Title Styling */
+    .title {
+        text-align: center;
+        color: #4A90E2;
+        font-size: 2em;
+        margin-bottom: 30px;
+    }
+
+    /* Doctor Card Grid */
+    .doctor-cards {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+    }
+
+    /* Individual Doctor Card */
+    .doctor-card {
+        background-color: #ffffff;
+        width: 250px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+
+    .doctor-card:hover {
+        transform: translateY(-5px);
+    }
+
+    /* Doctor Image */
+    .doctor-card img {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        margin-bottom: 15px;
+    }
+
+    /* Doctor Name */
+    .doctor-name {
+        font-size: 1.25em;
+        color: #333;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    /* Doctor Specialty */
+    .doctor-specialty {
+        font-size: 0.95em;
+        color: #666;
+        margin-bottom: 15px;
+    }
+
+    /* Register Button */
+    .register-link {
+        display: block;
+        text-align: center;
+        margin-top: 40px;
+        font-size: 1em;
+        color: #4A90E2;
+        font-weight: bold;
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+
+    .register-link:hover {
+        color: #357ABD;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="containers">
+    <h2 class="title">Our Registered Doctors</h2>
+
+    <div class="doctor-cards">
+        {% for doctor in doctors %}
+            <div class="doctor-card">
+                {% if doctor.profile_pic %}
+                    <img src="{{ doctor.profile_pic.url }}" alt="Doctor Image">
+                {% endif %}
+                <div class="doctor-name">{{ doctor.user.first_name }} {{ doctor.user.last_name }}</div>
+                <div class="doctor-specialty">{{ doctor.specialization }}</div>
+            </div>
+        {% empty %}
+            <p class="no-doctors">No doctors registered yet.</p>
+        {% endfor %}
+    </div>
+    {% if request.user %}
+    <a href="" class="register-link">These are our doctors</a>
+    {% else %}
+    <a href="{% url 'register_doctor' %}" class="register-link">Register as a Doctor</a>
+    {% endif %}
+</div>
+{% endblock %}

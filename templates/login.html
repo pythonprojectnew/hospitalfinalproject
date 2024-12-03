@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block style %}
+<style>
+    /* General Page Styling */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f9;
+        color: #333;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Container Styling */
+    .containers {
+        max-width: 700px; /* Increased the max-width to make the card larger */
+        margin: 60px auto;
+    }
+
+    /* Card Styling */
+    .card {
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Increased shadow for emphasis */
+        overflow: hidden;
+    }
+
+    .card-header {
+        background-color: #4A90E2;
+        color: white;
+        font-size: 1.75em; /* Increased font size */
+        text-align: center;
+        padding: 20px; /* Added more padding */
+        font-weight: bold;
+    }
+
+    .card-body {
+        padding: 30px; /* Increased padding for a roomier form layout */
+        background-color: #ffffff;
+    }
+
+    /* Form Styling */
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        font-weight: bold;
+        color: #333;
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 1.1em; /* Slightly larger font size */
+    }
+
+    .form-control:focus {
+        border-color: #4A90E2;
+        box-shadow: 0 0 6px rgba(74, 144, 226, 0.3);
+    }
+
+    /* Submit Button */
+    .btn-primary {
+        width: 100%;
+        padding: 14px; /* Larger button */
+        font-size: 1.1em;
+        font-weight: bold;
+        background-color: #4A90E2;
+        color: #ffffff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #357ABD;
+    }
+
+    /* Alert Messages */
+    .alert {
+        margin-top: 15px;
+        color: #D9534F;
+        font-weight: bold;
+    }
+
+    /* Register Link */
+    .register-link {
+        text-align: center;
+        margin-top: 25px;
+        font-size: 1em;
+        color: #333;
+    }
+
+    .register-link a {
+        color: #4A90E2;
+        text-decoration: none;
+    }
+
+    .register-link a:hover {
+        text-decoration: underline;
+        color: #357ABD;
+    }
+
+
+</style>
+{% endblock %}
+{% block content %}
+
+<div class="containers mt-5">
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="alert {{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">Login</div>
+                <div class="card-body">
+                    <form id="login-form" action="{% url 'login' %}" method="POST">
+                        {% csrf_token %}
+                        
+                        <div class="form-group">
+                            <label for="username">Enter Username</label>
+                            <input type="text" class="form-control" id="username" name="username" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="password">Enter Password</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        
+                        <input type="submit" value="Submit" class="btn btn-primary">
+                </div>
+            </div>
+            <p class="register-link">Don't have an account? <a href="{% url 'register_patient' %}">Register here</a></p>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

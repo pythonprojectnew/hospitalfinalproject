@@ -1,0 +1,193 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Telly Hotel</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Payment Gateway</title>
+        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background: #f5f5f5;
+                margin: 0;
+                padding: 20px;
+            }
+            .container {
+                max-width: 600px;
+                margin: 50px auto;
+                background: #fff;
+                border-radius: 10px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                padding: 30px;
+            }
+            .text-center {
+                text-align: center;
+            }
+            .form-group {
+                margin-bottom: 15px;
+            }
+            .form-control {
+                width: 100%;
+                padding: 10px;
+                margin-top: 5px;
+            }
+            .input-group-addon {
+                display: flex;
+                align-items: center;
+                padding: 10px;
+                background: #eee;
+                border: 1px solid #ccc;
+                border-left: none;
+                border-radius: 0 5px 5px 0;
+            }
+            .error {
+                color: red;
+                font-size: 12px;
+            }
+            .btn-primary {
+                background-color: #007bff;
+                border: none;
+                padding: 10px 20px;
+                cursor: pointer;
+                color: #fff;
+                border-radius: 5px;
+                margin-right: 10px;
+            }
+            .btn-primary:hover {
+                background-color: #0056b3;
+            }
+            .btn-cancel {
+                background-color: #6c757d;
+                border: none;
+                padding: 10px 20px;
+                cursor: pointer;
+                color: #fff;
+                border-radius: 5px;
+            }
+            .btn-cancel:hover {
+                background-color: #5a6268;
+            }
+            .icon-check_circle {
+                font-size: 50px;
+                color: green;
+            }
+        </style>
+    </head>
+<body>
+    <div class="container">
+        <div class="text-center">
+            <span class="icon-check_circle"></span>
+            <h3 class="display-5 text-black">Payment Gateway</h3>
+            <p class="lead mb-5">Make payment to proceed.</p>
+        </div>
+        <div>
+            <form role="form" method="POST" action="{% url 'prescription_payment' appointment.id %}" id="form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="cardNumber">CARD NUMBER</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="cardNumber" name="cardNumber" placeholder="Valid Card Number" required autofocus />
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
+                    </div>
+                    <span class="error" id="card-number-error"></span>
+                </div>
+                <div class="row">
+                    <div class="col-xs-7 col-md-7">
+                        <div class="form-group">
+                            <label for="expityMonth">EXPIRY DATE</label>
+                            <div class="row">
+                                <div class="col-xs-6 col-lg-6 pl-ziro">
+                                    <input type="text" class="form-control" id="expityMonth" name="expityMonth" placeholder="MM" required />
+                                </div>
+                                <div class="col-xs-6 col-lg-6 pl-ziro">
+                                    <input type="text" class="form-control" id="expityYear" name="expityYear" placeholder="YY" required />
+                                </div>
+                            </div>
+                            <span class="error" id="expiry-date-error"></span>
+                        </div>
+                    </div>
+                    <div class="col-xs-5 col-md-5 pull-right">
+                        <div class="form-group">
+                            <label for="cvCode">CV CODE</label>
+                            <input type="password" class="form-control" id="cvCode" name="cvCode" placeholder="CV" required />
+                            <span class="error" id="cvv-error"></span>
+                        </div>
+                    </div>
+                </div>
+                <br/>
+                <p>
+                    <input type="submit" value="Make Payment" class="btn btn-primary">
+                    <button type="button" onclick="close_win()" class="btn btn-cancel">Cancel</button>
+                </p>
+            </form>
+        </div>
+    </div>
+    <script>
+      document.getElementById('form').addEventListener('submit', function(event) {
+        event.preventDefault();
+    
+        // Get form values
+        const cardNumber = document.getElementById('cardNumber').value;
+        const expityMonth = document.getElementById('expityMonth').value;
+        const expityYear = document.getElementById('expityYear').value;
+        const cvCode = document.getElementById('cvCode').value;
+    
+        // Clear previous errors
+        document.getElementById('card-number-error').textContent = '';
+        document.getElementById('expiry-date-error').textContent = '';
+        document.getElementById('cvv-error').textContent = '';
+    
+        // Validate card number
+        if (!validateCardNumber(cardNumber)) {
+            document.getElementById('card-number-error').textContent = 'Invalid card number';
+        }
+    
+        // Validate expiry date
+        if (!validateExpiryDate(expityMonth, expityYear)) {
+            document.getElementById('expiry-date-error').textContent = 'Invalid expiry date';
+        }
+    
+        // Validate CVV
+        if (!validateCVV(cvCode)) {
+            document.getElementById('cvv-error').textContent = 'Invalid CVV';
+        }
+    
+        // If all validations pass
+        if (validateCardNumber(cardNumber) && validateExpiryDate(expityMonth, expityYear) && validateCVV(cvCode)) {
+            document.getElementById('form').submit();
+        }
+    });
+    
+    function validateCardNumber(cardNumber) {
+        const regex = /^\d{16}$/;
+        return regex.test(cardNumber);
+    }
+    
+    function validateExpiryDate(month, year) {
+        const regexMonth = /^(0[1-9]|1[0-2])$/;
+        const regexYear = /^\d{2}$/;
+        if (!regexMonth.test(month) || !regexYear.test(year)) return false;
+    
+        const now = new Date();
+        const currentMonth = now.getMonth() + 1;
+        const currentYear = now.getFullYear() % 100;
+    
+        const expYear = parseInt(year, 10);
+        const expMonth = parseInt(month, 10);
+    
+        return (expYear > currentYear) || (expYear === currentYear && expMonth >= currentMonth);
+    }
+    
+    function validateCVV(cvCode) {
+        const regex = /^\d{3}$/;
+        return regex.test(cvCode);
+    }
+    
+    function close_win() {
+        window.close();
+    }
+    </script>
+</body>
+</html>

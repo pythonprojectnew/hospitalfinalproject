@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block style %}
+<style>
+    /* General Styling */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f9;
+        color: #333;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Container Styling */
+    .containers {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 20px;
+        background: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Header Styling */
+    .welcome {
+        color: #4A90E2;
+        text-align: center;
+        font-size: 1.8em;
+        margin-bottom: 20px;
+    }
+
+    /* Section Headers */
+    .section-header {
+        font-size: 1.4em;
+        color: #333;
+        border-bottom: 2px solid #4A90E2;
+        padding-bottom: 8px;
+        margin-bottom: 20px;
+    }
+
+    /* Appointment List */
+    .appointment-list {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .appointment-item {
+        background: #f9f9f9;
+        padding: 15px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        transition: background-color 0.3s ease;
+    }
+
+    .appointment-item:hover {
+        background-color: #eef5ff;
+    }
+
+    .appointment-item a {
+        text-decoration: none;
+        color: #4A90E2;
+        font-weight: bold;
+    }
+
+    .appointment-item a:hover {
+        color: #357ABD;
+    }
+
+    /* Empty List Message */
+    .no-appointments {
+        color: #888;
+        font-style: italic;
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="containers">
+    <h2 class="welcome">Welcome, Dr. {{ request.user.username }}!</h2>
+
+    <div class="pending-appointments">
+        <h3 class="section-header">Pending Appointments</h3>
+        <ul class="appointment-list">
+            {% for appointment in pending_appointments %}
+                <li class="appointment-item">
+                    <a href="{% url 'patient_detail' appointment.patient.id appointment.id %}">
+                        {{ appointment.patient.user.username }} ({{ appointment.appointment_date }})
+                    </a>
+                </li>
+            {% empty %}
+                <li class="no-appointments">No pending appointments.</li>
+            {% endfor %}
+        </ul>
+    </div>
+    
+    <div class="completed-appointments">
+        <h3 class="section-header">Completed Appointments</h3>
+        <ul class="appointment-list">
+            {% for appointment in completed_appointments %}
+                <li class="appointment-item">
+                    <a href="{% url 'patient_detail' appointment.patient.id appointment.id %}">
+                        {{ appointment.patient.user.username }} ({{ appointment.appointment_date }})
+                    </a>
+                </li>
+            {% empty %}
+                <li class="no-appointments">No completed appointments.</li>
+            {% endfor %}
+        </ul>
+    </div>
+    
+</div>
+{% endblock %}
